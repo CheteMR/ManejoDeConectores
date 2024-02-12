@@ -1,0 +1,108 @@
+package modelo.persistencia.SQL;
+
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class DAObbdd {
+	
+
+	
+	public void createDatabase(){
+		try {
+			String sql = "CREATE DATABASE tarea_2";
+			Connection miConexion = DriverManager.getConnection("jdbc:mysql://localhost:3306/", "root", "");
+			Statement st = miConexion.createStatement();
+			st.executeUpdate(sql);
+			disconnect(); //Tengo que crear el método disconnect
+			
+		}catch (SQLException e) {
+			e.printStackTrace();
+			
+		}
+	}
+	
+	private Connection miConexion;
+	
+	public boolean connect() {
+		try {
+			miConexion= DriverManager.getConnection("jdbc:mysql://localhost:3306/tarea_2", "root", "");
+		}catch (SQLException e) {
+			return false;
+		}
+		return true;
+	}
+	
+	
+	
+	public void disconnect () {
+		try {
+			miConexion.close();
+		
+		
+	}catch (SQLException e) {
+		e.printStackTrace();
+	}
+	
+	}
+	
+	public void createTables(String tabla) {
+        String pasajeros = """
+                            CREATE TABLE pasajeros (
+                                id INTEGER(4) PRIMARY KEY AUTO_INCREMENT,
+                                nombre VARCHAR(20) NOT NULL,
+                                edad INTEGER(3) NOT NULL,
+                                peso DOUBLE NOT NULL,
+                                id_coche INTEGER(4),
+                                FOREIGN KEY (id_coche) REFERENCES coches(id)
+                            );
+                              """;
+        
+        String coches = """
+                CREATE TABLE coches(
+                    id INTEGER(4) PRIMARY KEY AUTO_INCREMENT,
+                    matricula VARCHAR(7) NOT NULL,
+                    marca VARCHAR(20) NOT NULL,
+                    modelo VARCHAR(20) NOT NULL,
+                    año VARCHAR(20) NOT NULL,
+                    kilometros VARCHAR (20) NOT NULL,
+                );
+                """;
+        
+        try{
+            connect();
+            Statement st = miConexion.createStatement();
+            if(tabla.equals("coches")) {
+                st.executeUpdate(coches);
+           }else if(tabla.equals("pasajeros")) {
+                st.executeUpdate(pasajeros);
+            }
+
+        }catch (SQLException e) {
+            System.out.println("checkTables()" + e.getMessage());
+        }
+        disconnect();
+    }
+
+    public void checkTable() {
+        try {
+            connect();
+            String[] tables = {"coches","pasajeros"};
+            DatabaseMetaData metaData = miConexion.getMetaData();
+            for (String table : tables) {
+                ResultSet rs = metaData.getTables(null, null, table, null);
+                if (!rs.next()) {
+                    createTables(table);
+                }
+            }
+        }catch (SQLException e) {
+            System.out.println("checkTables() =" + e.getMessage());
+        }
+        disconnect();
+    }
+
+}

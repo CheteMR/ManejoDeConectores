@@ -1,0 +1,41 @@
+package modelo.persistencia.SQL;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class DAObbdd {
+	
+
+	
+	public void createDatabase(){
+		try {
+			String sql = "CREATE DATABASE tarea_2";
+			Connection miConexion = DriverManager.getConnection("jdbc:mysql://localhost:3306/", "root", "");
+			Statement st = miConexion.createStatement();
+			st.executeUpdate(sql);
+			disconnect(); //Tengo que crear el método disconnect
+			
+		}catch (SQLException e) {
+			e.printStackTrace();
+			
+		}
+	}
+	
+	private Connection miConexion;
+	
+	
+	public void disconnect () {
+		try {
+			miConexion.close();
+		
+		
+	}catch (SQLException e) {
+		e.printStackTrace();
+	}
+	
+	}
+
+}

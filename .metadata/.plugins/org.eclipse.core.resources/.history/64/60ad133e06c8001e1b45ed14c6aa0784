@@ -1,0 +1,16 @@
+package vista;
+
+import java.util.Scanner;
+
+public class Vista {
+	
+	public static void main(String[] args) {
+		
+		Scanner sc;
+		
+		
+		boolean end = false;
+		sc = new Scanner(System.in);
+	}
+
+}
